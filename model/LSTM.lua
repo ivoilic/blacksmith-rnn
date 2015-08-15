@@ -1,3 +1,31 @@
+require 'nn'
+--local AddControlBias = torch.class('nn.AddControlBias', 'nn.Add')
+local AddControlBias,parent = torch.class('nn.AddControlBias', 'nn.Add')
+
+
+function AddControlBias:__init(inputSize,scalar,initVal)
+   parent.__init(self,inputSize,scalar)
+   self.ival = initVal
+   self.bias:fill(self.ival) --= torch.Tensor(size):fill(self.ival)
+end
+
+
+
+
+function SigmoidWithBias(input,setToOne)
+	if setToOne == true then
+		local addBias = nn.AddControlBias(4,true,1)(input)
+		local sigunit = nn.Sigmoid()(addBias)
+		return sigunit
+	else
+		local addBias = nn.Add(4,true)(input)
+		local sigunit = nn.Sigmoid()(addBias)
+		return sigunit
+	end
+
+end
+
+
 
 local LSTM = {}
 function LSTM.lstm(input_size, rnn_size, n, dropout)
@@ -34,13 +62,14 @@ function LSTM.lstm(input_size, rnn_size, n, dropout)
     local reshaped = nn.Reshape(4, rnn_size)(all_input_sums)
     local n1, n2, n3, n4 = nn.SplitTable(2)(reshaped):split(4)
     -- decode the gates
-    local in_gate = nn.Sigmoid()(n1)
-    local forget_gate = nn.Sigmoid()(n2)
-    local out_gate = nn.Sigmoid()(n3)
+    local in_gate = SigmoidWithBias(n1,false) --nn.Sigmoid()(n1)
+    local forget_gate = SigmoidWithBias(n2,true) -- nn.Sigmoid()(n2) --RMM
+
+    local out_gate =  SigmoidWithBias(n3,false) --nn.Sigmoid()(n3)
     -- decode the write inputs
-    local in_transform = nn.Tanh()(n4)
+    local in_transform = nn.Tanh()(nn.Add(4,true)(n4)) -- nn.Tanh()(n4)
     -- perform the LSTM update
-    local next_c           = nn.CAddTable()({
+    local next_c           = nn.CAddTable() ({
         nn.CMulTable()({forget_gate, prev_c}),
         nn.CMulTable()({in_gate,     in_transform})
       })

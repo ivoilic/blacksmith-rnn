@@ -16,6 +16,7 @@ require 'lfs'
 
 require 'util.OneHot'
 require 'util.misc'
+require 'model.LSTM'
 
 cmd = torch.CmdLine()
 cmd:text()
