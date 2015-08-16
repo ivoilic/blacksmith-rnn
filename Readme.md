@@ -1,9 +1,22 @@
+# mtg-rnn
+
+This repository is a custom modification of code originally released here:
+
+https://github.com/karpathy/char-rnn
+
+The modification provides improved support for generating Magic the Gathering cards, using the encoding techniques here:
+
+https://github.com/billzorn/mtgencode
+
+For the most part, this code will behave the same as the original char-rnn, but there will be slight differences in the behavior of the batcher and the sampling process to take advantage of cool properties of the format. If you want to train neural networks to generate arbitrary text, you're probably better off looking at the original repository; if you only care about MTG, then you're in the right place.
+
+For a detailed tutorial of how to set this code up and get it to work with the tools in mtgencode, refer to the [mtgencode readme](https://github.com/billzorn/mtgencode#mtgencode).
 
 # char-rnn
 
 This code implements **multi-layer Recurrent Neural Network** (RNN, LSTM, and GRU) for training/sampling from character-level language models. The model learns to predict the probability of the next character in a sequence. In other words, the input is a single text file and the model learns to generate text like it.
 
-The context of this code base is described in detail in my [blog post](http://karpathy.github.io/2015/05/21/rnn-effectiveness/). The [project page](http://cs.stanford.edu/people/karpathy/char-rnn/) that has a few pointers to some datasets.
+The context of this code base is described in detail in this [blog post](http://karpathy.github.io/2015/05/21/rnn-effectiveness/).
 
 
 If you are new to Torch/Lua/Neural Nets, it might be helpful to know that this code is really just a slightly more fancy version of this [100-line gist](https://gist.github.com/karpathy/d4dee566867f8291f086) that I wrote in Python/numpy. Th code in this repo additionally allows for multiple layers, uses an LSTM instead of an RNN, has more supporting code for model checkpointing, and is of course much more efficient.
@@ -38,7 +51,7 @@ $ luarocks install clnn
 
 ### Data
 
-All input data is stored inside the `data/` directory. You'll notice that there is an example dataset included in the repo (in folder `data/tinyshakespeare`) which consists of a subset of works of Shakespeare. I'm providing a few more datasets on the [project page](http://cs.stanford.edu/people/karpathy/char-rnn/).
+All input data is stored inside the `data/` directory. You'll notice that there is an example dataset included in the repo (in folder `data/mtgencode-std`) which is the standard encoded corpus of existing Magic the Gathering cards as produced by [mtgencode](https://github.com/billzorn/mtgencode).
 
 **Your own data**: If you'd like to use your own data create a single file `input.txt` and place it into a folder in `data/`. For example, `data/some_folder/input.txt`. The first time you run the training script it will write two more convenience files into `data/some_folder`.
 
