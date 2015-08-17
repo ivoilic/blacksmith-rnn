@@ -8,9 +8,33 @@ The modification provides improved support for generating Magic the Gathering ca
 
 https://github.com/billzorn/mtgencode
 
-For the most part, this code will behave the same as the original char-rnn, but there will be slight differences in the behavior of the batcher and the sampling process to take advantage of cool properties of the format. If you want to train neural networks to generate arbitrary text, you're probably better off looking at the original repository; if you only care about MTG, then you're in the right place.
+For the most part, this code behaves the same as the original char-rnn, but there are slight differences in the behavior of the batcher and the sampling process to take advantage of cool properties of the format. If you want to train neural networks to generate arbitrary text, you're probably better off looking at the original repository; if you only care about MTG, then you're in the right place.
 
 For a detailed tutorial of how to set this code up and get it to work with the tools in mtgencode, refer to the [mtgencode readme](https://github.com/billzorn/mtgencode#mtgencode).
+
+## Custom changes
+
+### Sampling
+
+A custom sampling script developed by Talcos is included in [sample_hs_v3.lua](https://github.com/billzorn/mtg-rnn/blob/master/sample_hs_v3.lua). It works exactly like the original sampling script, but it accepts additional options that allow you to prime the network with information as it's generating cards, a process we often call whispering. For example, you can specify that all card names should start with 'Garruk', and then whenever the network starts outputting something that appears to be a cardname, it will instead output 'Garruk' and then keep generating the card as if that's what it would have done normally.
+
+This file is due to be updated at some point, and possible renamed or merged into the standard sampling script.
+
+### Batching
+
+The primary difference between this code and char-rnn is that here we already know a great deal of information about the format. This allows us to do two clever things with the batcher.
+
+First, we can avoid splitting all of the data up and then training on the same, arbitrarily segmented batches for multiple epochs. Instead, the batcher first interprets the data as whole cards, and partitions cards between the splits instead of raw data chunks. To achieve the illusion of epochs, we replicate the training set the desired number of times, but write it out as a coherent sequence of randomly ordered cards before splitting. This way less information is lost when cards are chopped up between different batches, as the chopping will occur in different places for eacy copy. That's the hope, anyway.
+
+NOTE: THE FOLLOWING BATCHER FEATURES ARE STILL BEING IMPLEMENTED AND AREN'T AVAILABLE YET
+
+The batcher can also dynamically randomize the symbols in mana costs of cards, and the order of the fields in a card if the field's identity is specified by label rather than by order.
+
+The other clever feature is the ability to train on dynamically sized batches of exactly one card at a time. This does exactly what you'd expect; unfortunately it's very slow.
+
+### LSTM models
+
+Currently, the LSTM model contains modifications that add a learnable bias as suggested by [this paper](http://jmlr.org/proceedings/papers/v37/jozefowicz15.pdf). This will probably be moved to a separate custom model so you can choose to use the original model instead.
 
 # char-rnn
 

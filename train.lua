@@ -33,7 +33,7 @@ cmd:text('Train a character-level language model')
 cmd:text()
 cmd:text('Options')
 -- data
-cmd:option('-data_dir','data/tinyshakespeare','data directory. Should contain the file input.txt with input data')
+cmd:option('-data_dir','data/mtgencode-std','data directory. Should contain the file input.txt with input data')
 -- model params
 cmd:option('-rnn_size', 128, 'size of LSTM internal state')
 cmd:option('-num_layers', 2, 'number of layers in the LSTM')
@@ -107,10 +107,18 @@ if opt.gpuid >= 0 and opt.opencl == 1 then
 end
 
 -- create the data loader class
-local loader = CharSplitLMMinibatchLoader.create(opt.data_dir, opt.batch_size, opt.seq_length, split_sizes)
+local loader = CharSplitLMMinibatchLoader.create(opt.data_dir, opt.batch_size, opt.seq_length, opt.max_epochs, split_sizes)
 local vocab_size = loader.vocab_size  -- the number of distinct characters
 local vocab = loader.vocab_mapping
 print('vocab size: ' .. vocab_size)
+
+
+----
+-- early abort for loader testing
+--do return end
+----
+
+
 -- make sure output directory exists
 if not path.exists(opt.checkpoint_dir) then lfs.mkdir(opt.checkpoint_dir) end
 
@@ -283,7 +291,10 @@ end
 train_losses = {}
 val_losses = {}
 local optim_state = {learningRate = opt.learning_rate, alpha = opt.decay_rate}
-local iterations = opt.max_epochs * loader.ntrain
+-- epochs are handled by the loader; could add a fallback if it fails, 
+-- but usually you'd want to abort in that case
+--local iterations = opt.max_epochs * loader.ntrain
+local iterations = loader.ntrain
 local iterations_per_epoch = loader.ntrain
 local loss0 = nil
 for i = 1, iterations do
