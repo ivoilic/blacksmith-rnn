@@ -24,7 +24,7 @@ local CharSplitLMMinibatchLoader = {}
 CharSplitLMMinibatchLoader.__index = CharSplitLMMinibatchLoader
 
 function CharSplitLMMinibatchLoader.create(data_dir, batch_size, seq_length, 
-					   max_epochs, split_fractions)
+					   max_epochs, split_fractions, rmana, rfields)
     -- split_fractions is e.g. {0.9, 0.05, 0.05}
 
     local self = {}
@@ -74,7 +74,8 @@ function CharSplitLMMinibatchLoader.create(data_dir, batch_size, seq_length,
 
     -- do all preprocessing work here; might modify split_fractions as well
     data = CharSplitLMMinibatchLoader.process_cards(data, self.vocab_mapping, max_epochs, 
-						    batch_size, seq_length, split_fractions)
+						    batch_size, seq_length, split_fractions,
+						    rmana, rfields)
     --------
 
     -- cut off the end so that it divides evenly
@@ -213,14 +214,14 @@ end
 
 -- *** STATIC method ***
 function CharSplitLMMinibatchLoader.process_cards(data, vocab_mapping, max_epochs, 
-						  batch_size, seq_length, split_fractions)
+						  batch_size, seq_length, split_fractions,
+						  rmana, rfields)
     -- split_fractions is e.g. {0.9, 0.05, 0.05}
+   math.randomseed(torch.random())
 
-   --TODO: add options for these
-   local rmana = false
-   local rfields = false
-
-   print '\n-- preprocessing MTG cards --'
+   print('\n-- preprocessing MTG cards --')
+   if rmana then print('  randomizing mana costs') end
+   if rfields then print('  randomizing field ordering') end
 
    local datalen = data:size(1)
    local split_val_test = split_fractions[2] + split_fractions[3]
@@ -248,7 +249,8 @@ function CharSplitLMMinibatchLoader.process_cards(data, vocab_mapping, max_epoch
    -- sanity
    if batches_train < 1 then
       print('WARNING: no training batches')
-      print('  Training will not be possible with this configuration')
+      print('  Training will not be possible with this configuration.')
+      os.exit()
       print('-- aborting MTG preprocessing and proceeding with original data--\n')
       return data
    end
@@ -296,12 +298,14 @@ function CharSplitLMMinibatchLoader.process_cards(data, vocab_mapping, max_epoch
    if anomaly_multiple_newlines then
       print('WARNING: found a sequence of 3 or more consecutive newlines.')
       print('  This confuses the process of separating cards.')
+      os.exit()
       print('-- aborting MTG preprocessing and proceeding with original data--\n')
       return data
    end
    if cards_total <= 1 then
       print('WARNING: only found one thing that looks like a card.')
       print('  It makes no sense to proceed.')
+      os.exit()
       print('-- aborting MTG preprocessing and proceeding with original data--\n')
       return data
    end
@@ -381,7 +385,8 @@ function CharSplitLMMinibatchLoader.process_cards(data, vocab_mapping, max_epoch
    for i = 1,cards_train do cardsplit_train[i] = cards[i] end
    print('writing training data:')
    CharSplitLMMinibatchLoader.write_cardset(newdata_train, cardsplit_train, cards_train, 
-					    rmana, rfields)
+					    rmana, rfields, 
+					    newline, fieldsep, msymstart, msymend, mcounter)
 
    local newdata_val = nil
    local cardsplit_val = {}
@@ -390,7 +395,8 @@ function CharSplitLMMinibatchLoader.process_cards(data, vocab_mapping, max_epoch
       for i = 1,cards_val do cardsplit_val[i] = cards[i + cards_train] end
       print('writing validation data:')
       CharSplitLMMinibatchLoader.write_cardset(newdata_val, cardsplit_val, cards_val, 
-					       rmana, rfields)
+					       rmana, rfields, 
+					       newline, fieldsep, msymstart, msymend, mcounter)
    end
 
    local newdata_test = nil
@@ -400,7 +406,8 @@ function CharSplitLMMinibatchLoader.process_cards(data, vocab_mapping, max_epoch
       for i = 1,cards_test do cardsplit_test[i] = cards[i + cards_train + cards_val] end
       print('writing test data:')
       CharSplitLMMinibatchLoader.write_cardset(newdata_test, cardsplit_test, cards_test, 
-					       rmana, rfields)
+					       rmana, rfields, 
+					       newline, fieldsep, msymstart, msymend, mcounter)
    end
 
    --CharSplitLMMinibatchLoader.data_dump(newdata, seq_length * batch_size, ivocab)
@@ -412,7 +419,9 @@ function CharSplitLMMinibatchLoader.process_cards(data, vocab_mapping, max_epoch
 end
 
 -- *** STATIC method ***
-function CharSplitLMMinibatchLoader.write_cardset(data, cards, cardcount, rmana, rfields)
+function CharSplitLMMinibatchLoader.write_cardset(data, cards, cardcount, rmana, rfields, 
+						  newline, fieldsep, 
+						  msymstart, msymend, mcounter)
    local idx = 1
    local z = nil
    local z_idx = cardcount + 1
@@ -425,7 +434,9 @@ function CharSplitLMMinibatchLoader.write_cardset(data, cards, cardcount, rmana,
 	 z_idx = 1
 	 count_loops = count_loops + 1
       end
-      idx = idx + CharSplitLMMinibatchLoader.write_card(data, idx, cards[z[z_idx]], rmana, rfields)
+      idx = idx + CharSplitLMMinibatchLoader.write_card(data, idx, cards[z[z_idx]], rmana, rfields,
+							newline, fieldsep, 
+							msymstart, msymend, mcounter)
       z_idx = z_idx + 1
       count_cards = count_cards + 1
    end
@@ -434,13 +445,124 @@ function CharSplitLMMinibatchLoader.write_cardset(data, cards, cardcount, rmana,
 end
 
 -- *** STATIC method ***
-function CharSplitLMMinibatchLoader.write_card(data, data_idx, card, rmana, rfields)
-   local to_write = data:size(1) - data_idx + 1
-   if card:size(1) < to_write then
-      to_write = card:size(1)
+function CharSplitLMMinibatchLoader.write_card(data, data_idx, card, rmana, rfields,
+					       newline, fieldsep, 
+					       msymstart, msymend, mcounter)
+   local newcard = card
+   if rfields then
+      local cardsize = card:size(1)
+      local fields = {}
+      local terminal = nil
+
+      local field_start = 1
+      local field_idx = 1
+      local i = 1
+      local fields_not_done = true
+      card:apply(function(e)
+	    if (e == fieldsep or e == newline) and i > field_start and fields_not_done then
+	       -- include fieldsep at beginning of field, but not at end
+	       fields[field_idx] = card:sub(field_start, i-1)
+	       field_idx = field_idx + 1
+	       field_start = i
+	       -- special case to leave a final fieldsep in the terminal
+	       if e == newline or (i < cardsize and card[i + 1] == newline) then
+		  fields_not_done = false
+	       end
+	    end
+	    i = i + 1
+      end)
+
+      newcard = torch.ByteTensor(cardsize)
+
+      local fieldcount = field_idx - 1
+      local z = CharSplitLMMinibatchLoader.random_permutation(fieldcount)
+      i = 1
+      for z_idx = 1,fieldcount do
+	 local field = fields[z[z_idx]]
+	 local len = field:size(1)
+	 tencpy(newcard, i, field, 1, len)
+	 i = i + len
+      end
+      
+      -- deal with newlines on end of card, which under normal circumstances we should see
+      if fields_not_done then
+	 print('WARNING: no newline on end of card!')
+      end
+      terminal = card:sub(field_start, cardsize)
+      tencpy(newcard, i, terminal, 1, terminal:size(1))
    end
-   tencpy(data, data_idx, card, 1, to_write)
+
+   local to_write = data:size(1) - data_idx + 1
+   if newcard:size(1) < to_write then
+      to_write = newcard:size(1)
+   end
+   tencpy(data, data_idx, newcard, 1, to_write)
+
+   if rmana then
+      local cardview = data:sub(data_idx, data_idx + to_write - 1)
+      local start_idx = 0
+      local i = 1
+      cardview:apply(function(e)
+	    if e == msymstart then
+	       start_idx = i
+	    elseif e == msymend and start_idx > 0  and i - start_idx > 1 then
+	       CharSplitLMMinibatchLoader.rewrite_mana(cardview, start_idx + 1,
+						       newcard, start_idx + 1,
+						       i - start_idx - 1, mcounter)
+	       start_idx = 0
+	    end
+	    i = i + 1
+      end)
+   end
+   
    return to_write
+end
+
+-- *** STATIC method ***
+function CharSplitLMMinibatchLoader.rewrite_mana(data, data_idx, card, card_idx, len, mcounter)
+   local data_cost = data:sub(data_idx, data_idx + len - 1)
+   local card_cost = card:sub(card_idx, card_idx + len - 1)
+   local syms = {}
+
+   local sym_idx = 1
+   local sym_first_char = true
+   local i = 1
+   -- no checking or anything; this will break if the cost isn't correctly formatted
+   card_cost:apply(function(e)
+	 if e ~= mcounter and sym_first_char then
+	    syms[sym_idx] = card_cost:sub(i, i + 1)
+	    sym_idx = sym_idx + 1
+	    sym_first_char = false
+	 else
+	    if e == mcounter then
+	       syms[sym_idx] = card_cost:sub(i, i)
+	       sym_idx = sym_idx + 1
+	    end
+	    sym_first_char = true
+	 end
+	 i = i + 1
+   end)
+
+   local z = CharSplitLMMinibatchLoader.random_permutation(sym_idx - 1)
+
+   sym_idx = 1
+   sym_first_char = true
+   i = 1
+   -- mutate the data, while leaving our sources in the card untouched
+   data_cost:apply(function(e)
+	 if sym_first_char then
+	    local sym = syms[z[sym_idx]]
+	    sym_idx = sym_idx + 1
+	    local n = sym:size(1)
+	    tencpy(data_cost, i, sym, 1, n)
+	    if n > 1 then
+	       sym_first_char = false
+	    end
+	 else
+	    sym_first_char = true
+	 end
+	 i = i + 1
+   end)
 end
 
 -- *** STATIC method ***
@@ -448,7 +570,7 @@ function CharSplitLMMinibatchLoader.data_dump(data, batchsize, ivocab)
    print('====================')
    local i = 1
    data:apply(function(e)
-	 if batchsize > 0 and i < data:size(1) and i % batchsize == 0 then
+	 if batchsize > 0 and 1 < i and i < data:size(1) and i % batchsize == 1 then
 	    print('\n--------------------')
 	 end
 	 i = i + 1

@@ -34,6 +34,9 @@ cmd:text()
 cmd:text('Options')
 -- data
 cmd:option('-data_dir','data/mtgencode-std','data directory. Should contain the file input.txt with input data')
+cmd:option('-randomize_mana',false,'randomize mana costs of input cards. Not safe for improperly formatted input.')
+cmd:option('-randomize_fields',false,'randomize order of fields in input cards. Only makes sense if your fields are labeled.')
+cmd:option('-data_dir','data/mtgencode-std','data directory. Should contain the file input.txt with input data')
 -- model params
 cmd:option('-rnn_size', 128, 'size of LSTM internal state')
 cmd:option('-num_layers', 2, 'number of layers in the LSTM')
@@ -107,7 +110,7 @@ if opt.gpuid >= 0 and opt.opencl == 1 then
 end
 
 -- create the data loader class
-local loader = CharSplitLMMinibatchLoader.create(opt.data_dir, opt.batch_size, opt.seq_length, opt.max_epochs, split_sizes)
+local loader = CharSplitLMMinibatchLoader.create(opt.data_dir, opt.batch_size, opt.seq_length, opt.max_epochs, split_sizes, opt.randomize_mana, opt.randomize_fields)
 local vocab_size = loader.vocab_size  -- the number of distinct characters
 local vocab = loader.vocab_mapping
 print('vocab size: ' .. vocab_size)

@@ -26,9 +26,9 @@ The primary difference between this code and char-rnn is that here we already kn
 
 First, we can avoid splitting all of the data up and then training on the same, arbitrarily segmented batches for multiple epochs. Instead, the batcher first interprets the data as whole cards, and partitions cards between the splits instead of raw data chunks. To achieve the illusion of epochs, we replicate the training set the desired number of times, but write it out as a coherent sequence of randomly ordered cards before splitting. This way less information is lost when cards are chopped up between different batches, as the chopping will occur in different places for eacy copy. That's the hope, anyway.
 
-NOTE: THE FOLLOWING BATCHER FEATURES ARE STILL BEING IMPLEMENTED AND AREN'T AVAILABLE YET
-
 The batcher can also dynamically randomize the symbols in mana costs of cards, and the order of the fields in a card if the field's identity is specified by label rather than by order.
+
+NOTE: THE FOLLOWING BATCHER FEATURES ARE STILL BEING IMPLEMENTED AND AREN'T AVAILABLE YET
 
 The other clever feature is the ability to train on dynamically sized batches of exactly one card at a time. This does exactly what you'd expect; unfortunately it's very slow.
 
