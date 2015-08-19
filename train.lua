@@ -36,7 +36,6 @@ cmd:text('Options')
 cmd:option('-data_dir','data/mtgencode-std','data directory. Should contain the file input.txt with input data')
 cmd:option('-randomize_mana',false,'randomize mana costs of input cards. Not safe for improperly formatted input.')
 cmd:option('-randomize_fields',false,'randomize order of fields in input cards. Only makes sense if your fields are labeled.')
-cmd:option('-data_dir','data/mtgencode-std','data directory. Should contain the file input.txt with input data')
 -- model params
 cmd:option('-rnn_size', 128, 'size of LSTM internal state')
 cmd:option('-num_layers', 2, 'number of layers in the LSTM')
