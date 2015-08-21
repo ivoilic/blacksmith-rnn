@@ -248,11 +248,9 @@ function CharSplitLMMinibatchLoader.process_cards(data, vocab_mapping, max_epoch
 
    -- sanity
    if batches_train < 1 then
-      print('WARNING: no training batches')
+      print('ERROR: no training batches')
       print('  Training will not be possible with this configuration.')
       os.exit()
-      print('-- aborting MTG preprocessing and proceeding with original data--\n')
-      return data
    end
    
    local ivocab = {}
@@ -296,18 +294,14 @@ function CharSplitLMMinibatchLoader.process_cards(data, vocab_mapping, max_epoch
 
    -- sanity checks
    if anomaly_multiple_newlines then
-      print('WARNING: found a sequence of 3 or more consecutive newlines.')
+      print('ERROR: found a sequence of 3 or more consecutive newlines.')
       print('  This confuses the process of separating cards.')
       os.exit()
-      print('-- aborting MTG preprocessing and proceeding with original data--\n')
-      return data
    end
    if cards_total <= 1 then
-      print('WARNING: only found one thing that looks like a card.')
+      print('ERROR: only found one thing that looks like a card.')
       print('  It makes no sense to proceed.')
       os.exit()
-      print('-- aborting MTG preprocessing and proceeding with original data--\n')
-      return data
    end
 
    local cards_train = math.floor(cards_total * split_fractions[1])
