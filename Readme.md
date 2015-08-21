@@ -34,7 +34,7 @@ The other clever feature is the ability to train on dynamically sized batches of
 
 ### LSTM models
 
-Currently, the LSTM model contains modifications that add a learnable bias as suggested by [this paper](http://jmlr.org/proceedings/papers/v37/jozefowicz15.pdf). This will probably be moved to a separate custom model so you can choose to use the original model instead.
+A modified LSTM model is available, with modifications that add a learnable bias as suggested by [this paper](http://jmlr.org/proceedings/papers/v37/jozefowicz15.pdf). To use it, specify the option "-model lstmb" when training.
 
 # char-rnn
 
