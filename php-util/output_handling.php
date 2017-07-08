@@ -23,7 +23,7 @@ function blacksmithOutToArray($dir){
 function createCardSet($setTitle, $cardArray, $titleIndex, $bodyIndex, $costIndex){
 
 
-	$fileLocation = "sets/".$setTitle;
+	$fileLocation = "./sets/".$setTitle;
 	mkdir($fileLocation, 0755);
 	$cardCount = 0;
 
