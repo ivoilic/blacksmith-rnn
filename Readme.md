@@ -3,6 +3,7 @@
 This repository is a custom modification of code originally released here:
 
 https://github.com/karpathy/char-rnn
+|- https://github.com/billzorn/mtg-rnn
 
 The modification provides improved support for generating Magic the Gathering cards, using the encoding techniques here:
 
