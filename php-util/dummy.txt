@@ -1,0 +1,130 @@
+creating an lstm...	
+missing seed text, using uniform probability over first character	
+--------------------------	
+lrder|1fox|2{b}{b}|
+
+|0Henmielle Gellong|1rabbit|2{b}{a}{c}|
+
+|0Jeanne Serris|1crow|2{b}|
+
+|0Kumiko Birrins|1bear|2{c}{b}|
+
+|0Naoko Rodbert|1fox|2{c}{b}|
+
+|0Pablo Shark|1rabbit|2{b}{c}|
+
+|0Arshur Dollam|1bear|2{a}{b}|
+
+|0Rene Sandon|1crow|2{a}{a}|
+
+|0Miyako Greven|1rabbit|2{c}|
+
+|0Grace Harrison|1rabbit|2{c}{a}|
+
+|0Iran Rorely|1rabbit|2{a}{a}|
+
+|0Taddy Mcclunell|1mouse|2{b}|
+
+|0Gordon Borner|1crow|2{a}{c}|
+
+|0Gordon Rigand|1crow|2{b}{a}|
+
+|0Dolly Mcclallonghandon|1crow|2{b}{b}{b}|
+
+|0Dean Elles|1bear|2{a}|
+
+|0Van Bordon|1fox|2{b}{a}|
+
+|0Paula Harring|1bear|2{b}|
+
+|0Wilma Wollipp|1bear|2{c}{c}{a}|
+
+|0Irene Frenkly|1fox|2{b}|
+
+|0Tenne Friwkers|1rabbit|2{b}|
+
+|0Sally Granfarl|1fox|2{b}{a}|
+
+|0Oscar Schard|1crow|2{b}{c}|
+
+|0Ophelia Odrins|1mouse|2{b}|
+
+|0Dolly Grake|1mouse|2{a}|
+
+|0Paloma Carton|1rabbit|2{c}{b}{c}|
+
+|0Mieko Camper|1crow|2{c}|
+
+|0Isabel Barner|1fox|2{b}|
+
+|0Itoe Bampton|1fox|2{c}{b}|
+
+|0Arael Toods|1rabbit|2{a}{a}|
+
+|0Henry Burrer|1bear|2{c}{a}|
+
+|0Frances Hobcra|1crow|2{c}{a}{c}|
+
+|0Wendy Shern|1rabbit|2{c}{b}|
+
+|0Fun Shanner|1mouse|2{b}{c}|
+
+|0Marco Carris|1bear|2{a}{c}|
+
+|0Sally Sander|1bear|2{b}|
+
+|0Gart Jonrey|1rabbit|2{a}{c}|
+
+|0Jose Madding|1mouse|2{b}{b}|
+
+|0Jarry Burton|1rabbit|2{b}{b}{c}|
+
+|0Petty Rulland|1rabbit|2{a}{b}{b}|
+
+|0Nanan Mccall|1rabbit|2{b}{b}|
+
+|0Maria Tarres|1fox|2{c}{b}|
+
+|0William Campon|1fox|2{a}{b}|
+
+|0Arlene Schuele|1crow|2{b}|
+
+|0Ophelia Solan|1bear|2{b}{b}|
+
+|0Sebastien Carros|1bear|2{a}|
+
+|0Josephine Frisfek|1fox|2{b}{b}|
+
+|0Virginie Camper|1bear|2{c}{a}|
+
+|0Pablo Salesard|1bear|2{c}{a}|
+
+|0Rebekah Rus|1mouse|2{a}{b}|
+
+|0Lorenzo Granch|1rabbit|2{a}{b}|
+
+|0Pablo Daller|1crow|2{a}{c}|
+
+|0Tamyy Harrill|1bear|2{c}{b}|
+
+|0Nana Days|1mouse|2{b}|
+
+|0Miyoko Henson|1bear|2{b}{c}{b}|
+
+|0Tenly Grark|1bear|2{b}|
+
+|0Otto Mclaigla|1fox|2{a}|
+
+|0Elsuko Morraz|1bear|2{c}{c}|
+
+|0Kareko Schbear|1bear|2{c}|
+
+|0Akane Guard|1fox|2{b}{c}|
+
+|0Valerie Rory|1fox|2{b}{a}|
+
+|0Leren Rosh|1rabbit|2{b}{a}{a}|
+
+|0Miwa Glarks|1bear|2{a}{b}{c}|
+
+|0Hedell

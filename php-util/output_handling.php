@@ -1,5 +1,4 @@
 <?php
-require(Imagick);
 function blacksmithOutToArray($dir){
 	$input = file_get_contents($dir);
 
@@ -25,7 +24,7 @@ function createCardSet($setTitle, $cardArray, $titleIndex, $bodyIndex, $costInde
 
 
 	$fileLocation = "sets/".$setTitle;
-	mkdir($fileLocation, 0644);
+	mkdir($fileLocation, 0755);
 	$cardCount = 0;
 
 	foreach($cardArray as &$value) {
