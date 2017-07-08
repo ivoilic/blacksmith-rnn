@@ -1,4 +1,4 @@
-# mtg-rnn
+# blacksmith-rnn
 
 This repository is a custom modification of code originally released here:
 
@@ -16,7 +16,7 @@ For a detailed tutorial of how to set this code up and get it to work with the t
 
 ### Sampling
 
-A custom sampling script developed by Talcos is included in [sample_hs_v3.lua](https://github.com/billzorn/mtg-rnn/blob/master/sample_hs_v3.lua). It works exactly like the original sampling script, but it accepts additional options that allow you to prime the network with information as it's generating cards, a process we often call whispering. For example, you can specify that all card names should start with 'Garruk', and then whenever the network starts outputting something that appears to be a cardname, it will instead output 'Garruk' and then keep generating the card as if that's what it would have done normally.
+A custom sampling script developed by Talcos is included in [sample_hs_v3.lua](https://github.com/ivoilic/blacksmith-rnn/blob/master/sample_hs_v3.lua). It works exactly like the original sampling script, but it accepts additional options that allow you to prime the network with information as it's generating cards, a process we often call whispering. For example, you can specify that all card names should start with 'Garruk', and then whenever the network starts outputting something that appears to be a cardname, it will instead output 'Garruk' and then keep generating the card as if that's what it would have done normally.
 
 This file is due to be updated at some point, and possible renamed or merged into the standard sampling script.
 
