@@ -38,7 +38,7 @@ function createCardSet($setTitle, $cardArray, $titleIndex, $bodyIndex, $costInde
 
 		$canvas->setImageFormat('jpg');
 		$fileName = $setTitle.'-'.$cardCount.'.jpg';
-		file_put_contents ($fileLocation.$fileName, $canvas);
+		file_put_contents ($fileLocation."/".$fileName, $canvas);
 
 		$cardCount++;
 
